@@ -1,45 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <Patch>
-  <Operation Class="XmlExtensions.ForEach">
+  <Operation Class="XmlExtensions.Conditional">
     <xpath>/Defs/AlienRace.ThingDef_AlienRace</xpath>
-    <apply>
-      <!-- Assumptions:
-           - Any race without statBases is inheriting it
-           - Any abstract or concrete race with statBases, if defining MarketValue, is defining
-             RoyalFavorValue in the same place -->
-      <Operation Class="XmlExtensions.Conditional">
-        <xpath>{DEF}/statBases</xpath>
-        <caseTrue>
+    <caseTrue>
+      <Operation Class="XmlExtensions.ForEach">
+        <xpath>/Defs/AlienRace.ThingDef_AlienRace</xpath>
+        <apply>
+          <!-- Assumptions:
+            - Any race without statBases is inheriting it
+            - Any abstract or concrete race with statBases, if defining MarketValue, is defining
+          RoyalFavorValue in the same place -->
           <Operation Class="XmlExtensions.Conditional">
-            <xpath>{DEF}/statBases/RoyalFavorValue</xpath>
-            <caseFalse>
-              <Operation Class="XmlExtensions.CreateVariable">
-                <storeIn>raceMultiplierOfHumanMarketValue</storeIn>
-                <value>{DEF}/statBases/MarketValue</value>
-                <fromXml>true</fromXml>
-                <defaultValue>1750</defaultValue>
-                <value2>1750</value2>
-                <operation>/</operation>
-                <apply>
+            <xpath>{DEF}/statBases</xpath>
+            <caseTrue>
+              <Operation Class="XmlExtensions.Conditional">
+                <xpath>{DEF}/statBases/RoyalFavorValue</xpath>
+                <caseFalse>
                   <Operation Class="XmlExtensions.CreateVariable">
-                    <storeIn>raceRoyalFavorValue</storeIn>
-                    <value>{raceMultiplierOfHumanMarketValue}</value>
-                    <value2>3</value2>
-                    <operation>*</operation>
+                    <storeIn>raceMultiplierOfHumanMarketValue</storeIn>
+                    <value>{DEF}/statBases/MarketValue</value>
+                    <fromXml>true</fromXml>
+                    <defaultValue>1750</defaultValue>
+                    <value2>1750</value2>
+                    <operation>/</operation>
                     <apply>
-                      <Operation Class="PatchOperationAdd">
-                        <xpath>{DEF}/statBases</xpath>
-                        <value><RoyalFavorValue>{raceRoyalFavorValue}</RoyalFavorValue></value>
+                      <Operation Class="XmlExtensions.CreateVariable">
+                        <storeIn>raceRoyalFavorValue</storeIn>
+                        <value>{raceMultiplierOfHumanMarketValue}</value>
+                        <value2>3</value2>
+                        <operation>*</operation>
+                        <apply>
+                          <Operation Class="PatchOperationAdd">
+                            <xpath>{DEF}/statBases</xpath>
+                            <value><RoyalFavorValue>{raceRoyalFavorValue}</RoyalFavorValue></value>
+                          </Operation>
+                        </apply>
                       </Operation>
                     </apply>
                   </Operation>
-                </apply>
+                </caseFalse>
               </Operation>
-            </caseFalse>
+            </caseTrue>
           </Operation>
-        </caseTrue>
+        </apply>
       </Operation>
-    </apply>
+    </caseTrue>
+    <caseFalse>
+      <Operation Class="XmlExtensions.Log">
+        <warning>[Empire Tribute Honor Alien Autopatcher] No alien races were found. Make sure this mod is listed after all alien race mods in your mod list!</warning>
+      </Operation>
+    </caseFalse>
   </Operation>
 </Patch>
