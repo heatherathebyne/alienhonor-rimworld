@@ -41,5 +41,6 @@ This mod should be placed after all race mods in your mod list.</description>
     <li>goudaquiche.lighterthanfast</li>
     <li>imranfish.xmlextensions</li>
     <li>sera.apinialienrace</li>
+    <li>syrchalis.thrumkin</li>
   </loadAfter>
 </ModMetaData>
